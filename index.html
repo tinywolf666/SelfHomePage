@@ -1484,43 +1484,49 @@
         }
     }
 
+    const MEDIA_MANIFEST = {
+        "linemod": {
+            images: ["1.jpg", "2.jpeg", "3.jpeg", "4.jpeg", "5.jpg", "6.jpg", "7.jpg", "8.jpg"],
+            videos: []
+        },
+        "other": {
+            images: ["1.jpg", "3.jpg"],
+            videos: ["1.mp4"]
+        },
+        "target": {
+            images: ["1.jpeg", "2.jpeg", "3.jpeg"],
+            videos: ["1.mp4"]
+        },
+        "wheel-leg": {
+            images: ["1.jpg", "2.jpeg"],
+            videos: ["1.mp4"]
+        }
+    };
+
+
     async function discoverProjectMedia(assetDir) {
         const base = `${PROJECT_MEDIA_BASE}/${assetDir}`;
+        const m = MEDIA_MANIFEST[assetDir] || { images: [], videos: [] };
 
-        // 支持多个视频：cover/demo/1..12（mp4/webm）
-        const videoCandidates = [
-            "cover.mp4", "cover.webm",
-            "demo.mp4", "demo.webm",
-            ...Array.from({length: 12}, (_, i) => i + 1).flatMap(n => [`${n}.mp4`, `${n}.webm`])
-        ];
+        const videos = (m.videos || []).map(f => ({
+            type: "video",
+            src: `${base}/${f}`,
+            caption: "Demo Video"
+        }));
 
-        // 图片：cover + 1..12（多格式）
-        const imgExts = ["jpg", "jpeg", "png", "webp", "gif"];
-        const imageCandidates = [
-            ...imgExts.map(ext => `cover.${ext}`),
-            ...Array.from({length: 12}, (_, i) => i + 1).flatMap(n => imgExts.map(ext => `${n}.${ext}`))
-        ];
+        const images = (m.images || []).map(f => ({
+            type: "image",
+            src: `${base}/${f}`,
+            caption: "System Preview"
+        }));
 
-        const videos = [];
-        for (const f of videoCandidates) {
-            const u = `${base}/${f}`;
-            if (await urlExists(u)) videos.push({type: "video", src: u, caption: "Demo Video"});
-        }
-
-        const images = [];
-        for (const f of imageCandidates) {
-            const u = `${base}/${f}`;
-            if (await urlExists(u)) images.push({type: "image", src: u, caption: "System Preview"});
-        }
-
-        // 合并：视频在前（更“有冲击力”），图片在后
         const items = [...videos, ...images];
 
-        if (items.length === 0) return {coverType: "none", coverSrc: "", items};
+        if (!items.length) return { coverType: "none", coverSrc: "", items };
 
-        // 封面类型：只要有视频，就认为封面队列里包含视频
-        const coverType = videos.length ? "carousel" : "slideshow";
-        return {coverType, coverSrc: items[0].src, items};
+        // 你现在封面轮播已经支持 video+image 混播，所以直接用 carousel 更统一
+        const coverType = items.some(x => x.type === "video") ? "carousel" : "slideshow";
+        return { coverType, coverSrc: items[0].src, items };
     }
 
 
