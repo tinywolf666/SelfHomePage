@@ -1,20 +1,61 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Personal Portfolio Website
 
-# Run and deploy your AI Studio app
+A cyber-inspired personal portfolio website showcasing my projects, research work, and engineering background in **Robotics, Computer Vision, and Intelligent Systems**.
 
-This contains everything you need to run your app locally.
+The site is fully static, lightweight, and designed for long-term maintainability.  
+It supports **automatic media discovery**, **video & image carousels**, **bilingual content**, and **responsive layouts**, making it suitable both as a personal homepage and as a project showcase.
 
-View your app in AI Studio: https://ai.studio/apps/temp/2
+---
 
-## Run Locally
+## ✨ Features
 
-**Prerequisites:**  Node.js
+- ⚙️ **Pure Static Website**
+  - No backend, no build step, no framework dependency
+  - Runs on any static hosting (GitHub Pages, Cloudflare Pages, etc.)
 
+- 🎥 **Automatic Media Handling**
+  - Project folders are scanned automatically
+  - If videos exist → video used as project cover
+  - If no video → images are displayed as a carousel
+  - Supports multiple videos and images per project
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- 🧠 **Project-Centric Design**
+  - Modular project cards
+  - Detailed modal view with media gallery and descriptions
+  - Suitable for research, coursework, and personal experiments
+
+- 🌍 **Bilingual Support**
+  - English / Chinese content switching
+  - Language-independent project structure
+
+- 🎨 **Cyber / Engineering UI Style**
+  - HUD-like layout
+  - Subtle animations
+  - Dark theme optimized for technical content
+
+- 📱 **Responsive**
+  - Desktop and mobile friendly
+  - Touch-friendly media playback
+
+---
+
+## 📁 Project Structure
+
+```text
+.
+├── index.html              # Main entry
+├── assets/                 # Icons, styles, shared assets
+├── projects/               # Project media folders
+│   ├── target/
+│   │   ├── demo.mp4
+│   │   ├── 1.jpg
+│   │   └── 2.jpg
+│   ├── linemod/
+│   │   ├── cover.jpg
+│   │   └── demo.mp4
+│   └── other/
+│       ├── 1.jpg
+│       ├── 2.jpg
+│       └── 3.jpg
+└── README.md
+

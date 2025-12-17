@@ -1,127 +1,1947 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Chenghuan Yu | Robotics Engineer</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Tailwind Config for Custom Colors/Fonts -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              tech: {
-                dark: '#020202', // Pitch Black
-                panel: '#0a0a0a', // Almost Black
-                card: '#121212', // Dark Gray
-                border: '#333333', // Border Gray
-                accent: '#FFD700', // Bright Gold
-                'accent-dim': '#B8860B', // Dark Goldenrod
-                subtle: '#a1a1aa', // Zinc 400
-              }
-            },
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-              mono: ['JetBrains Mono', 'Menlo', 'monospace'],
-            },
-            backgroundImage: {
-              'gradient-gold': 'linear-gradient(to right, #FFD700, #FFFACD, #FFD700)',
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            /* 调亮后的高级灰/深空蓝灰体系 */
+            --color-bg: #0d1117; /* 基础背景稍亮 */
+            --color-bg-light: #161b22; /* 板块背景 */
+            --color-bg-dark: #010409; /* 深处阴影 */
+
+            --color-panel: #21262d; /* 卡片/导航栏背景 */
+            --color-card: #30363d; /* 悬浮卡片背景 */
+            --color-border: #484f58; /* 边框更明显一点 */
+
+            /* 统一的科技蓝 (Electric Cyan) */
+            --color-accent: #00d0ff;
+            --color-accent-dim: #007acc;
+            --color-accent-glow: rgba(0, 208, 255, 0.6);
+
+            --color-text: #f0f6fc; /* 纯白偏冷 */
+            --color-subtle: #8b949e;
+
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Menlo', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* 径向渐变范围扩大，中心更亮，营造通透感 */
+            background: radial-gradient(circle at 50% 20%, #232936 0%, var(--color-bg) 50%, var(--color-bg-dark) 100%);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            font-family: inherit;
+        }
+
+        /* --- SCI-FI BACKGROUND DECORATIONS --- */
+
+        /* 1. 巨大的旋转背景环 (HUD Ring) */
+        .bg-ring {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px dashed rgba(0, 208, 255, 0.05);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-ring-1 {
+            width: 60vw;
+            height: 60vw;
+            animation: spin 120s linear infinite;
+        }
+
+        .bg-ring-2 {
+            width: 45vw;
+            height: 45vw;
+            border-style: solid;
+            border-color: rgba(0, 208, 255, 0.03);
+            border-width: 1px;
+            animation: spin 80s linear infinite reverse;
+        }
+
+        /* 2. 垂直数据线 */
+        .data-stream {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ds-left {
+            left: 10%;
+        }
+
+        .ds-right {
+            right: 10%;
+        }
+
+        /* 数据线上的流光点 */
+        .data-dot {
+            position: absolute;
+            top: 0;
+            left: -1px;
+            width: 3px;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, var(--color-accent), transparent);
+            animation: dataFlow 8s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes dataFlow {
+            0% {
+                top: -100px;
+                opacity: 0;
             }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+            }
+        }
+
+        /* 3. 装饰性文字块 */
+        .decor-text {
+            position: fixed;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: rgba(0, 208, 255, 0.15);
+            pointer-events: none;
+            z-index: 0;
+            letter-spacing: 2px;
+        }
+
+        .dt-bl {
+            bottom: 5%;
+            left: 12%;
+            transform: rotate(-90deg);
+            transform-origin: left bottom;
+        }
+
+        .dt-tr {
+            top: 15%;
+            right: 12%;
+            text-align: right;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-3 {
+            gap: 0.75rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .gap-8 {
+            gap: 2rem;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .fixed {
+            position: fixed;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .inset-0 {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .text-accent {
+            color: var(--color-accent);
+        }
+
+        .text-subtle {
+            color: var(--color-subtle);
+        }
+
+        .font-mono {
+            font-family: var(--font-mono);
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (min-width: 768px) {
+            .md-grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .md-grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .md-flex-row {
+                flex-direction: row;
+            }
+
+            .md-block {
+                display: block;
+            }
+
+            .md-justify-end {
+                justify-content: flex-end;
+            }
+
+            .md-items-center {
+                align-items: center;
+            }
+
+            .bg-ring-1 {
+                width: 40vw;
+                height: 40vw;
+            }
+
+            .bg-ring-2 {
+                width: 30vw;
+                height: 30vw;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg-grid-cols-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* --- BACKGROUND FX --- */
+        .bg-grid-pattern {
+            background-size: 50px 50px;
+            /* 网格线条稍微明显一点，增加科技感 */
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+        .laser-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+            box-shadow: 0 0 20px var(--color-accent);
+            animation: scan 8s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* --- COMPONENTS --- */
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            background: rgba(22, 27, 34, 0.7); /* 稍亮的半透明背景 */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .lang-btn {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--color-border);
+            padding: 6px 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 15px var(--color-accent-glow);
+            color: #fff;
+            background: rgba(0, 208, 255, 0.1);
+        }
+
+        /* Hero */
+        header {
+            padding-top: calc(80px + 120px);
+            padding-bottom: 120px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 0.95;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .hero-name-stroke {
+            -webkit-text-stroke: 1px var(--color-text);
+            color: transparent;
+        }
+
+        .hero-name-gradient {
+            background: linear-gradient(to right, var(--color-accent), #ffffff, var(--color-accent));
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 40px var(--color-accent-glow); /* 更强的光晕 */
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 5rem;
+            }
+        }
+
+        /* Buttons */
+        .btn-social {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(33, 38, 45, 0.8);
+            border: 1px solid var(--color-border);
+            border-radius: 2px;
+            color: var(--color-subtle);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+
+        .btn-social:hover {
+            color: #fff;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 15px var(--color-accent-glow);
+            background: rgba(0, 208, 255, 0.1);
+        }
+
+        /* Avatar */
+        .avatar-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .ring-1 {
+            inset: 0;
+            border: 1px dotted var(--color-accent);
+            animation: spin 30s linear infinite;
+            opacity: 0.6;
+        }
+
+        .ring-2 {
+            inset: 16px;
+            border: 2px dashed var(--color-accent);
+            animation: spin 20s linear infinite reverse;
+            opacity: 0.4;
+        }
+
+        .avatar-core {
+            position: absolute;
+            inset: 32px;
+            background: var(--color-panel);
+            border: 2px solid var(--color-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 208, 255, 0.15);
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 10rem;
+        }
+
+        .section-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .section-icon-box {
+            position: relative;
+            padding: 1rem;
+            background: var(--color-panel);
+            border: 1px solid var(--color-border);
+            color: var(--color-accent);
+            box-shadow: 0 0 15px rgba(0, 208, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--color-accent), transparent);
+            opacity: 0.4;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(33, 38, 45, 0.6); /* 更透一点 */
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover {
+            border-color: var(--color-accent);
+            transform: translateY(-6px);
+            box-shadow: 0 10px 40px -10px rgba(0, 208, 255, 0.2);
+            background: rgba(33, 38, 45, 0.9);
+        }
+
+        .card-img-placeholder {
+            height: 14rem;
+            background: #0d1117;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 208, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .card:hover .scan-overlay {
+            opacity: 1;
+        }
+
+        /* Experience Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 4rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -13px;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--color-bg);
+            border: 2px solid var(--color-border);
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            box-shadow: 0 0 20px var(--color-accent-glow);
+        }
+
+        .timeline-content {
+            background: rgba(33, 38, 45, 0.4);
+            padding: 2rem;
+            border-radius: 4px;
+            border-left: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .timeline-item:hover .timeline-content {
+            border-left-color: var(--color-accent);
+            background: rgba(33, 38, 45, 0.8);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(1, 4, 9, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-overlay.active .modal-content {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            border-color: var(--color-accent-dim);
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                flex-direction: row;
+            }
+
+            .modal-left {
+                width: 60%;
+                border-right: 1px solid var(--color-border);
+            }
+
+            .modal-right {
+                width: 40%;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 70;
+            background: var(--color-panel);
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--color-accent-glow);
+        }
+
+        /* Tag */
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--color-border);
+            color: #888;
+            border-radius: 2px;
+        }
+
+        .card:hover .tag {
+            border-color: rgba(0, 208, 255, 0.3);
+            color: var(--color-accent);
+        }
+
+        /* HUD Borders */
+        .hud-corner {
+            position: absolute;
+            width: 3rem;
+            height: 3rem;
+            border: 2px solid var(--color-accent);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .hud-tl {
+            top: 2rem;
+            left: 2rem;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .hud-tr {
+            top: 2rem;
+            right: 2rem;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .hud-bl {
+            bottom: 2rem;
+            left: 2rem;
+            border-right: none;
+            border-top: none;
+        }
+
+        .hud-br {
+            bottom: 2rem;
+            right: 2rem;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+
+        .icon-lg {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+            border: 2px solid var(--color-bg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-accent);
+        }
+
+        #hero-name-container {
+            margin-top: 48px;
+        }
+
+        .hero-name-cn {
+            color: var(--color-accent);
+            -webkit-text-stroke: 0;
+            background: none;
+            text-shadow: 0 0 20px var(--color-accent-glow);
+        }
+
+
+        /* --- Project cover media (auto) --- */
+        .card-cover-media {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0.9;
+        }
+
+        .card-cover-layer {
+            position: absolute;
+            inset: 0;
+            transition: opacity 600ms ease;
+            opacity: 0;
+        }
+
+        .card-cover-layer.active {
+            opacity: 1;
+        }
+
+    </style>
+    <script type="importmap">
+        {
+          "imports": {
+            "react": "https://esm.sh/react@^19.2.3",
+            "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+            "react/": "https://esm.sh/react@^19.2.3/",
+            "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+            "framer-motion": "https://esm.sh/framer-motion@^12.23.26"
           }
         }
-      }
     </script>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <style>
-      body {
-        background-color: #020202;
-        color: #e4e4e7;
-        overflow-x: hidden;
-      }
-      
-      /* Tech Grid Background */
-      .bg-grid-pattern {
-        background-size: 40px 40px;
-        background-image: 
-          linear-gradient(to right, rgba(255, 215, 0, 0.05) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-        mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
-        -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
-      }
-
-      /* Scanning Line Animation */
-      @keyframes scan {
-        0% { transform: translateY(-100vh); opacity: 0; }
-        50% { opacity: 0.5; }
-        100% { transform: translateY(100vh); opacity: 0; }
-      }
-
-      .scan-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to bottom, transparent, rgba(255, 215, 0, 0.1) 50%, transparent);
-        opacity: 0.1;
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      .laser-line {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #FFD700, transparent);
-        box-shadow: 0 0 15px #FFD700;
-        animation: scan 8s linear infinite;
-        z-index: 1;
-        pointer-events: none;
-      }
-
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #000; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #333; 
-        border-radius: 0px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #FFD700; 
-      }
-      
-      .text-glow {
-        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
-    "lucide-react": "https://esm.sh/lucide-react@^0.561.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
+<body>
+
+<!-- Sci-Fi Background Decorations -->
+<div class="bg-ring bg-ring-1"></div>
+<div class="bg-ring bg-ring-2"></div>
+<div class="data-stream ds-left">
+    <div class="data-dot"></div>
+</div>
+<div class="data-stream ds-right">
+    <div class="data-dot" style="animation-delay: 2s;"></div>
+</div>
+<div class="decor-text dt-bl">SYSTEM.OS.V2 // ONLINE</div>
+<div class="decor-text dt-tr">COORDS: 50.7753° N, 6.0839° E<br>STATUS: MONITORING</div>
+
+<!-- Standard Backgrounds -->
+<div class="bg-grid-pattern"></div>
+<div class="laser-line"></div>
+<canvas id="particle-canvas"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></canvas>
+
+<!-- HUD Borders -->
+<div class="fixed inset-0 z-50 pointer-events-none hidden md-block">
+    <div class="hud-corner hud-tl"></div>
+    <div class="hud-corner hud-tr"></div>
+    <div class="hud-corner hud-bl"></div>
+    <div class="hud-corner hud-br"></div>
+</div>
+
+<!-- Navigation -->
+<nav>
+    <div class="container flex justify-between items-center w-full">
+        <div class="flex items-center gap-3" style="cursor: pointer;">
+            <div style="padding:4px; border:1px solid rgba(0, 208, 255, 0.4); border-radius:4px; background: rgba(0, 208, 255, 0.1);">
+                <svg class="icon text-accent" viewBox="0 0 24 24">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                </svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-weight: bold; font-size: 1.25rem; letter-spacing: -0.05em;">CY<span
+                    class="text-accent">.DEV</span></span>
+        </div>
+        <button id="lang-toggle" class="lang-btn">
+            <svg class="icon icon-sm text-subtle" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span class="text-subtle font-mono" style="font-size:0.875rem;" id="lang-text">EN</span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero -->
+<header class="container">
+    <div class="grid grid-cols-1 md-grid-cols-3 gap-8 items-center">
+        <div style="grid-column: span 2;">
+            <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 16px; background:rgba(0, 208, 255, 0.1); border:1px solid rgba(0, 208, 255, 0.3); color:var(--color-accent); font-family:var(--font-mono); font-size:0.75rem; border-radius:2px; margin-bottom:2rem; backdrop-filter:blur(4px);">
+                <span style="width:8px; height:8px; background:var(--color-accent); border-radius:50%; display:inline-block; box-shadow:0 0 10px var(--color-accent);"></span>
+                <span id="hero-status">#OpenToWork</span>
+            </div>
+
+            <h1 id="hero-name-container">
+                <div class="hero-name-stroke" id="hero-firstname">Chenghuan</div>
+                <div class="hero-name-gradient" id="hero-lastname">Yu</div>
+            </h1>
+
+            <h2 style="font-size:1.5rem; color:var(--color-subtle); display:flex; align-items:center; gap:1rem; font-family:var(--font-mono); margin-bottom:1.5rem; font-weight:300;">
+                <span style="width:40px; height:2px; background:var(--color-accent);"></span>
+                <span id="hero-role" style="color:#fff;">M.Sc Robotic Engineering Student</span>
+            </h2>
+
+            <p id="hero-bio"
+               style="font-size:1.125rem; color:#c9d1d9; max-width:650px; line-height:1.7; border-left:3px solid rgba(0, 208, 255, 0.4); padding-left:1.5rem; margin-bottom:2rem; background:linear-gradient(90deg, rgba(0,208,255,0.05), transparent);">
+                Loading bio...
+            </p>
+
+            <div class="flex flex-col md-flex-row gap-6 font-mono text-subtle"
+                 style="font-size:0.875rem; margin-bottom:2rem;">
+                <div class="flex items-center gap-2">
+                    <svg class="icon icon-sm text-accent" viewBox="0 0 24 24">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span id="hero-location">Aachen, Germany</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="icon icon-sm text-accent" viewBox="0 0 24 24">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span>tiny.ych.wolf@gmail.com</span>
+                </div>
+            </div>
+
+            <div class="flex gap-4" style="margin-bottom: 2rem;">
+                <a href="https://linkedin.com" target="_blank" class="btn-social">
+                    <svg class="icon text-subtle" viewBox="0 0 24 24">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                    LINKEDIN
+                </a>
+            </div>
+        </div>
+
+        <div class="flex justify-center md-justify-end">
+            <div class="avatar-container">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="avatar-core">
+                    <img src="./src/微信图片_20251216205726.jpg"
+                         style="width:100%;height:100%;object-fit:cover;object-position: 50% 30%;">
+                </div>
+                <div style="position:absolute; bottom:0; right:2.5rem; background:var(--color-bg); border:1px solid var(--color-accent); padding:4px 12px; font-size:0.75rem; color:var(--color-accent); font-family:var(--font-mono); display:flex; align-items:center; gap:6px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                    <span style="width:6px; height:6px; background:var(--color-accent); border-radius:50%; box-shadow: 0 0 5px var(--color-accent);"></span>
+                    ONLINE
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="container">
+    <!-- Projects -->
+    <section id="projects-section">
+        <div class="section-title-wrap">
+            <div class="section-icon-box">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <h2 class="section-title" id="title-projects">Featured Projects</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="grid grid-cols-1 md-grid-cols-2 lg-grid-cols-3 gap-8" id="projects-grid">
+            <!-- Project cards injected via JS -->
+        </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience-section">
+        <div class="section-title-wrap">
+            <div class="section-icon-box">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+            </div>
+            <h2 class="section-title" id="title-experience">Work Experience</h2>
+            <div class="section-line"></div>
+        </div>
+        <div style="margin-left:2rem;" id="experience-list">
+            <!-- Experience injected via JS -->
+        </div>
+    </section>
+
+    <!-- Patents & Education -->
+    <div class="grid grid-cols-1 md-grid-cols-2 gap-8" style="margin-bottom:10rem;">
+        <!-- Patents -->
+        <div>
+            <div class="section-title-wrap">
+                <div class="section-icon-box">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                </div>
+                <h2 class="section-title" id="title-patents">Achievements</h2>
+                <div class="section-line"></div>
+            </div>
+            <div id="patents-list" class="flex flex-col gap-6"></div>
+        </div>
+        <!-- Education -->
+        <div>
+            <div class="section-title-wrap">
+                <div class="section-icon-box">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="section-title" id="title-education">Education</h2>
+                <div class="section-line"></div>
+            </div>
+            <div id="education-list" class="flex flex-col gap-6"></div>
+        </div>
+    </div>
+
+    <!-- Skills -->
+    <section>
+        <div class="section-title-wrap">
+            <div class="section-icon-box">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                    <rect x="9" y="9" width="6" height="6"></rect>
+                    <line x1="9" y1="1" x2="9" y2="4"></line>
+                    <line x1="15" y1="1" x2="15" y2="4"></line>
+                    <line x1="9" y1="20" x2="9" y2="23"></line>
+                    <line x1="15" y1="20" x2="15" y2="23"></line>
+                    <line x1="20" y1="9" x2="23" y2="9"></line>
+                    <line x1="20" y1="14" x2="23" y2="14"></line>
+                    <line x1="1" y1="9" x2="4" y2="9"></line>
+                    <line x1="1" y1="14" x2="4" y2="14"></line>
+                </svg>
+            </div>
+            <h2 class="section-title" id="title-skills">Technical Arsenal</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="grid grid-cols-1 md-grid-cols-2 lg-grid-cols-4 gap-6" id="skills-grid">
+            <!-- Skills injected -->
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer style="border-top:1px solid var(--color-border); background:rgba(22,27,34,0.5); padding:4rem 0; text-align:center;">
+    <div class="flex flex-col items-center gap-4">
+        <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 16px; background:var(--color-panel); border:1px solid var(--color-border); border-radius:99px; opacity:0.8;">
+            <span style="width:8px; height:8px; background:#00ff00; border-radius:50%; box-shadow:0 0 10px #00ff00;"></span>
+            <span class="font-mono text-subtle" style="font-size:0.75rem; letter-spacing:0.1em;">SYSTEM OPERATIONAL // V.2.0.5</span>
+        </div>
+        <p class="text-subtle" style="font-size:0.75rem; opacity:0.5;">&copy; 2025 Chenghuan Yu. All Rights
+            Reserved.</p>
+    </div>
+</footer>
+
+<!-- Project Modal -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content" id="modal-content">
+        <button class="modal-close" id="modal-close">
+            <svg class="icon" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <!-- Content injected via JS -->
+        <div class="modal-left" style="background:#0d1117; display:flex; flex-direction:column; overflow:hidden;">
+            <div style="flex:1; overflow-y:auto; padding:2rem;" id="modal-media-list"></div>
+        </div>
+        <div class="modal-right"
+             style="padding:3rem; overflow-y:auto; background:rgba(22, 27, 34, 0.9); backdrop-filter:blur(10px);">
+            <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--color-accent); letter-spacing:0.2em; border-bottom:1px solid rgba(0, 208, 255, 0.2); padding-bottom:1rem; margin-bottom:1.5rem;">
+                PROJECT DATA LOG
+            </div>
+            <h2 id="modal-title"
+                style="font-size:2.5rem; font-weight:900; line-height:1; margin-bottom:1.5rem; color:#fff;"></h2>
+            <div class="flex flex-col gap-2 font-mono text-subtle" style="font-size:0.875rem; margin-bottom:2rem;">
+                <span id="modal-institution"
+                      style="background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:2px; display:inline-block; width:fit-content;"></span>
+                <span id="modal-period" style="color:var(--color-accent);"></span>
+            </div>
+            <p id="modal-description"
+               style="color:#c9d1d9; line-height:1.7; margin-bottom:2rem; border-left:2px solid rgba(0, 208, 255, 0.2); padding-left:1rem;"></p>
+
+            <div style="margin-top:auto;">
+                <h4 style="font-size:0.75rem; font-weight:bold; color:var(--color-accent); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    Tech Stack Initialization
+                </h4>
+                <div id="modal-stack" class="flex" style="flex-wrap:wrap; gap:0.5rem;"></div>
+            </div>
+
+            <div id="modal-link-container"
+                 style="margin-top:3rem; padding-top:2rem; border-top:1px solid rgba(255,255,255,0.1);">
+                <a id="modal-link" href="#" target="_blank"
+                   style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem 1.5rem; background:var(--color-accent); color:#000; font-weight:bold; font-size:0.875rem; text-transform:uppercase; letter-spacing:0.1em; clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%); transition: all 0.3s; box-shadow: 0 0 20px rgba(0,208,255,0.3);">
+                        <span class="flex items-center gap-2">
+                            <svg class="icon" viewBox="0 0 24 24"><path
+                                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                            ACCESS REPOSITORY
+                        </span>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* --- DATA --- */
+    const DATA_EN = {
+        hero: {
+            name: "Chenghuan Yu",
+            role: "M.Sc Robotic Engineering Student",
+            bio: "Passionate Robotics and Algorithm Engineer specializing in SLAM, Computer Vision, and 6DoF pose estimation. Currently pursuing a Master's at RWTH Aachen University. Experienced in full-stack robot development from mechanical design to algorithmic deployment.",
+            location: "Aachen, Germany",
+            status: "#OpenToWork"
+        },
+        sectionTitles: {
+            projects: "Featured Projects",
+            experience: "Work Experience",
+            education: "Education",
+            skills: "Technical Arsenal",
+            patents: "Achievements"
+        },
+        projects: [
+            {
+                id: "p1",
+                assetDir: "target",
+                title: "Long-range Intelligent Target Reporting System",
+                institution: "RWTH Aachen University",
+                period: "Mar 2025 - Present",
+                description: "Developing a long-distance target identification and reporting system. Currently undergoing patent registration. The system integrates computer vision for precise target acquisition.",
+                techStack: ["JavaScript", "C++", "Machine Learning", "HTML", "SolidWorks"],
+                media: [
+                    {type: "image", caption: "System Array Setup"},
+                    {type: "image", caption: "Target Recognition UI"},
+                    {type: "image", caption: "Calibration Interface"}
+                ]
+            },
+            {
+                id: "p2",
+                assetDir: "linemod",
+                title: "LineMod Dataset Automation and 6Dof Pose Estimation",
+                institution: "South China University of Technology",
+                period: "Research Project",
+                description: "Created a pipeline for generating LineMod datasets using BlenderProc and Automatic Semantic Segmentation. Significantly improved training data generation efficiency for 6D pose estimation models.",
+                techStack: ["OpenCV", "MeshLab", "Blender", "Python"],
+                link: "https://gitee.com/yu-chenghuan/Linemod-Real.git",
+                media: [
+                    {type: "image", caption: "3D Cube Rendering"},
+                    {type: "image", caption: "Semantic Segmentation Mask"}
+                ]
+            },
+            {
+                id: "p3",
+                assetDir: "wheel-leg",
+                title: "Wheel-Leg Robot",
+                institution: "South China University of Technology",
+                period: "Graduation Project",
+                description: "Full-stack development of a hybrid wheel-leg robot. Won 'Best Graduation Project'. Handled mechanical design, circuit design, and ROS control algorithms for locomotion.",
+                techStack: ["C++", "Python", "ROS", "Embedded Systems"],
+                link: "https://gitee.com/yu-chenghuan/wheel-legged-robot.git",
+                media: [
+                    {type: "image", caption: "Robot Prototype"},
+                    {type: "video", caption: "Locomotion Demo"}
+                ]
+            },
+            {
+                id: "p4",
+                assetDir: "other",
+                title: "Other Projects & Experiments",
+                institution: "Personal / Coursework",
+                period: "2020 - Present",
+                description: "A collection of small but fun engineering experiments, demos, and prototypes.",
+                techStack: ["Robotics", "Vision", "C++", "Python", "ROS", "C"],
+                media: []
+            }
+        ],
+        experience: [
+            {
+                role: "AI Algorithm Intern",
+                company: "Mech-Mind Robotics",
+                period: "Jul 2024 - Sep 2024",
+                location: "Beijing, China",
+                description: [
+                    "Developed applications using Python and MongoDB.",
+                    "Worked on Large Language Model (LLM) deployment and invocation."
+                ],
+                techStack: ["Python", "MongoDB", "LLM"]
+            },
+            {
+                role: "Structural Engineer Intern",
+                company: "Foshan Yuanyuan Electric",
+                period: "Aug 2023 - Nov 2023",
+                location: "Guangdong, China",
+                description: ["Designed mechanical structures and enclosures for electrical components using CAD tools."],
+                techStack: ["AutoCAD", "SolidWorks"]
+            },
+            {
+                role: "Robotic Visual Algorithm Engineer",
+                company: "SCUT Robotics Lab",
+                period: "Apr 2022 - Sep 2023",
+                location: "Guangdong, China",
+                description: [
+                    "Focused on 6DoF pose calculation, target recognition, and tracking.",
+                    "Project won 1st Prize in National Robotics Master Competition.",
+                    "Deployed Deep Learning and Reinforcement Learning algorithms on robots."
+                ],
+                techStack: ["Python", "PyTorch", "ROS", "OpenCV"]
+            }
+        ],
+        education: [
+            {
+                school: "RWTH Aachen University",
+                degree: "Master of Engineering - M.Eng, Robotic Engineering",
+                period: "Oct 2024 - May 2027",
+                achievements: ["Focus: ROS, OpenCV, Machine Learning"]
+            },
+            {
+                school: "South China University of Technology",
+                degree: "Bachelor of Engineering, Electrical Engineering & Automation",
+                period: "Sep 2020 - Jul 2024",
+                gpa: "3.2",
+                achievements: ["Robot Lab Member", "Tennis Team"]
+            }
+        ],
+        patents: [
+            {
+                title: "Patent: Target Reporting System",
+                number: "20 2025 003 252.6",
+                date: "2025-10-30",
+                description: "A long-distance target reporting system based on OpenCV, C++, and Javascript."
+            },
+            {
+                title: "Best Open Source Algorithm at the Young Engineers Conference - First Place",
+                date: "2023-8",
+                description: "A pipeline for generating LineMod datasets based on BlenderProc and automatic semantic segmentation."
+            },
+            {
+                title: "Mech Masters Super Showdown National Tournament - Third Place, First Prize",
+                date: "2023-6",
+                description: "A member of the robotics lab team, responsible for developing vision and control algorithms for engineering robots."
+            }
+
+        ],
+        skills: [
+            {category: "Languages", items: ["Python", "C++", "JavaScript", "HTML"]},
+            {category: "AI & CV", items: ["PyTorch", "OpenCV", "Machine Learning", "Reinforcement Learning", "LLMs"]},
+            {category: "Robotics", items: ["ROS (Robot Operating System)", "SLAM", "Path Planning"]},
+            {category: "Tools", items: ["SolidWorks", "AutoCAD", "MeshLab", "Blender", "Git", "MongoDB"]}
+        ]
+    };
+
+    const DATA_CN = {
+        hero: {
+            name: "余承寰",
+            role: "机器人工程硕士在读 / 算法工程师",
+            bio: "热衷于机器人技术和算法研发，专注于SLAM、计算机视觉和6自由度姿态估计。目前在德国亚琛工业大学攻读硕士学位。拥有从机械设计到算法部署的机器人全栈开发经验。",
+            location: "德国 亚琛",
+            status: "#求职中"
+        },
+        sectionTitles: {
+            projects: "精选项目",
+            experience: "工作经历",
+            education: "教育背景",
+            skills: "技术栈",
+            patents: "成果"
+        },
+        projects: [
+            {
+                id: "p1",
+                assetDir: "target",
+                title: "专利：二郎神智能报靶系统",
+                institution: "德国亚琛工业大学",
+                period: "2025年3月 - 至今",
+                description: "开发基于计算机视觉的远距离目标识别与报告系统。目前正在申请专利。该系统集成了先进的视觉算法，用于精确的目标获取与遥测。",
+                techStack: ["JavaScript", "C++", "Machine Learning", "HTML", "SolidWorks"],
+                media: [
+                    {type: "image", caption: "系统阵列设置"},
+                    {type: "image", caption: "目标识别界面"},
+                    {type: "image", caption: "校准后台"}
+                ]
+            },
+            {
+                id: "p2",
+                assetDir: "linemod",
+                title: "LineMod 数据集自动化生成以及6Dof姿态估计",
+                institution: "华南理工大学",
+                period: "科研项目",
+                description: "基于 BlenderProc 和自动语义分割构建了 LineMod 数据集生成流水线。显著提高了 6D 姿态估计模型的训练数据生成效率。",
+                techStack: ["OpenCV", "MeshLab", "Blender", "Python"],
+                link: "https://gitee.com/yu-chenghuan/Linemod-Real.git",
+                media: [
+                    {type: "image", caption: "3D 立方体渲染"},
+                    {type: "image", caption: "语义分割掩码"}
+                ]
+            },
+            {
+                id: "p3",
+                assetDir: "wheel-leg",
+                title: "轮腿机器人",
+                institution: "华南理工大学",
+                period: "毕业设计",
+                description: "混合轮腿机器人的全栈开发。荣获“优秀毕业设计”。负责机械设计、电路设计以及基于ROS的运动控制算法。",
+                techStack: ["C++", "Python", "ROS", "Embedded Systems"],
+                link: "https://gitee.com/yu-chenghuan/wheel-legged-robot.git",
+                media: [
+                    {type: "image", caption: "机器人原型"},
+                    {type: "video", caption: "运动演示"}
+                ]
+            },
+            {
+                id: "p4",
+                assetDir: "other",
+                title: "其他项目与实验",
+                institution: "个人 / 课程项目",
+                period: "2022 - 至今",
+                description: "一些杂七杂八但很有意思的小作品、实验与原型合集。",
+                techStack: ["机器人", "视觉", "C++", "Python", "ROS", "C"],
+                media: []
+            }
+
+        ],
+        experience: [
+            {
+                role: "AI算法实习生",
+                company: "梅卡曼德机器人 (Mech-Mind)",
+                period: "2024年7月 - 2024年9月",
+                location: "中国 北京",
+                description: [
+                    "使用 Python 和 MongoDB 进行应用开发。",
+                    "负责大语言模型 (LLM) 的部署与机器人调用集成。"
+                ],
+                techStack: ["Python", "MongoDB", "LLM"]
+            },
+            {
+                role: "结构工程师实习生",
+                company: "佛山源源电气",
+                period: "2023年8月 - 2023年11月",
+                location: "中国 广东",
+                description: ["使用 CAD 工具设计电气元件的机械结构和外壳。"],
+                techStack: ["AutoCAD", "SolidWorks"]
+            },
+            {
+                role: "机器人视觉算法工程师",
+                company: "华南理工大学 机器人实验室",
+                period: "2022年4月 - 2023年9月",
+                location: "中国 广东",
+                description: [
+                    "专注于 6DoF 姿态计算、目标识别与跟踪。",
+                    "项目获全国机器人大师赛一等奖。",
+                    "在机器人上部署深度学习和强化学习算法。"
+                ],
+                techStack: ["Python", "PyTorch", "ROS", "OpenCV"]
+            }
+        ],
+        education: [
+            {
+                school: "德国亚琛工业大学 (RWTH Aachen)",
+                degree: "工程硕士 - 机器人工程",
+                period: "2024年10月 - 2027年5月",
+                achievements: ["主修: ROS, OpenCV, 机器学习"]
+            },
+            {
+                school: "华南理工大学",
+                degree: "工学学士 - 电气工程及其自动化",
+                period: "2020年9月 - 2024年7月",
+                gpa: "3.2",
+                achievements: ["机器人实验室成员", "网球队"]
+            }
+        ],
+        patents: [
+            {
+                title: "智能报靶系统",
+                number: "20 2025 003 252.6",
+                date: "2025-10-30",
+                description: "基于 OpenCV, C++ 和 Javascript 的远距离目标报告系统实用新型专利。"
+            },
+            {
+                title: "青年工程师大会 最佳开源算法 第一名",
+                date: "2023-8",
+                description: "基于 BlenderProc 和自动语义分割的 LineMod 数据集生成流水线。"
+            },
+            {
+                title: "机甲大师超级对抗赛全国赛 季军 一等奖",
+                date: "2023-6",
+                description: "机器人实验室团队成员，负责工程机器人视觉与控制算法开发。"
+            }
+        ],
+        skills: [
+            {category: "编程语言", items: ["Python", "C++", "JavaScript", "HTML"]},
+            {category: "AI & 视觉", items: ["PyTorch", "OpenCV", "Machine Learning", "Reinforcement Learning", "LLMs"]},
+            {category: "机器人", items: ["ROS (Robot Operating System)", "SLAM", "Path Planning"]},
+            {category: "工具软件", items: ["SolidWorks", "AutoCAD", "MeshLab", "Blender", "Git", "MongoDB"]}
+        ]
+    };
+
+    /* --- APP STATE --- */
+    let currentLang = 'en';
+    let currentData = DATA_EN;
+
+    /* --- DOM ELEMENTS --- */
+    const els = {
+        langToggle: document.getElementById('lang-toggle'),
+        langText: document.getElementById('lang-text'),
+        heroStatus: document.getElementById('hero-status'),
+        heroFirstname: document.getElementById('hero-firstname'),
+        heroLastname: document.getElementById('hero-lastname'),
+        heroRole: document.getElementById('hero-role'),
+        heroBio: document.getElementById('hero-bio'),
+        heroLocation: document.getElementById('hero-location'),
+
+        titles: {
+            projects: document.getElementById('title-projects'),
+            experience: document.getElementById('title-experience'),
+            patents: document.getElementById('title-patents'),
+            education: document.getElementById('title-education'),
+            skills: document.getElementById('title-skills')
+        },
+
+        projectsGrid: document.getElementById('projects-grid'),
+        experienceList: document.getElementById('experience-list'),
+        patentsList: document.getElementById('patents-list'),
+        educationList: document.getElementById('education-list'),
+        skillsGrid: document.getElementById('skills-grid'),
+
+        modal: {
+            overlay: document.getElementById('modal-overlay'),
+            content: document.getElementById('modal-content'),
+            closeBtn: document.getElementById('modal-close'),
+            title: document.getElementById('modal-title'),
+            institution: document.getElementById('modal-institution'),
+            period: document.getElementById('modal-period'),
+            description: document.getElementById('modal-description'),
+            stack: document.getElementById('modal-stack'),
+            linkContainer: document.getElementById('modal-link-container'),
+            link: document.getElementById('modal-link'),
+            mediaList: document.getElementById('modal-media-list')
+        }
+    };
+
+    /* --- ICONS SVG MAP --- */
+    const Icons = {
+        activity: `<svg class="icon icon-lg" style="color:var(--color-accent); opacity:0.3; margin-bottom:1rem;" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`
+    };
+
+
+    /* --- AUTO MEDIA DISCOVERY (no directory listing needed) --- */
+    const PROJECT_MEDIA_BASE = "./projects"; // e.g. ./projects/linemod, ./projects/target, ./projects/wheel-leg
+
+    async function urlExists(url) {
+        try {
+            let res = await fetch(url, {method: "HEAD", cache: "no-store"});
+            if (res.ok) return true;
+
+            // Some static hosts disallow HEAD — fallback to a tiny ranged GET
+            res = await fetch(url, {
+                method: "GET",
+                cache: "no-store",
+                headers: {"Range": "bytes=0-0"}
+            });
+            return res.ok;
+        } catch {
+            return false;
+        }
+    }
+
+    async function discoverProjectMedia(assetDir) {
+        const base = `${PROJECT_MEDIA_BASE}/${assetDir}`;
+
+        // 支持多个视频：cover/demo/1..12（mp4/webm）
+        const videoCandidates = [
+            "cover.mp4", "cover.webm",
+            "demo.mp4", "demo.webm",
+            ...Array.from({length: 12}, (_, i) => i + 1).flatMap(n => [`${n}.mp4`, `${n}.webm`])
+        ];
+
+        // 图片：cover + 1..12（多格式）
+        const imgExts = ["jpg", "jpeg", "png", "webp", "gif"];
+        const imageCandidates = [
+            ...imgExts.map(ext => `cover.${ext}`),
+            ...Array.from({length: 12}, (_, i) => i + 1).flatMap(n => imgExts.map(ext => `${n}.${ext}`))
+        ];
+
+        const videos = [];
+        for (const f of videoCandidates) {
+            const u = `${base}/${f}`;
+            if (await urlExists(u)) videos.push({type: "video", src: u, caption: "Demo Video"});
+        }
+
+        const images = [];
+        for (const f of imageCandidates) {
+            const u = `${base}/${f}`;
+            if (await urlExists(u)) images.push({type: "image", src: u, caption: "System Preview"});
+        }
+
+        // 合并：视频在前（更“有冲击力”），图片在后
+        const items = [...videos, ...images];
+
+        if (items.length === 0) return {coverType: "none", coverSrc: "", items};
+
+        // 封面类型：只要有视频，就认为封面队列里包含视频
+        const coverType = videos.length ? "carousel" : "slideshow";
+        return {coverType, coverSrc: items[0].src, items};
+    }
+
+
+    async function applyDiscoveredMediaToData(dataObj) {
+        const cache = new Map();
+
+        for (const p of (dataObj.projects || [])) {
+            if (!p.assetDir) continue;
+
+            if (!cache.has(p.assetDir)) {
+                cache.set(p.assetDir, await discoverProjectMedia(p.assetDir));
+            }
+
+            const found = cache.get(p.assetDir);
+            p.media = found.items;           // normalized: {type, src, caption}
+            p._coverType = found.coverType;  // internal cover hint
+            p._coverSrc = found.coverSrc;
+        }
+    }
+
+    /* --- cover playback/rotation control --- */
+    let _coverIntervals = [];
+
+    function clearCoverIntervals() {
+        _coverIntervals.forEach(id => clearInterval(id));
+        _coverIntervals = [];
+    }
+
+    function initProjectCovers() {
+        clearCoverIntervals();
+
+        const holders = document.querySelectorAll("[data-cover-index]");
+        holders.forEach(holder => {
+            const idx = Number(holder.getAttribute("data-cover-index"));
+            const p = currentData.projects[idx];
+            if (!p) return;
+
+            const items = (p.media || []).filter(m => m && m.src && (m.type === "image" || m.type === "video"));
+
+            // fallback
+            if (!items.length) {
+                holder.innerHTML = `
+        <div class="flex flex-col items-center gap-2 text-subtle"
+             style="font-family:var(--font-mono); font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase;">
+          ${Icons.activity}
+          SYSTEM PREVIEW
+        </div>`;
+                return;
+            }
+
+            // 轮播状态
+            let k = 0;
+
+            holder.innerHTML = `<div class="cover-stage" style="position:absolute; inset:0;"></div>`;
+            const stage = holder.querySelector(".cover-stage");
+
+            const show = (i) => {
+                const it = items[i];
+
+                // 清空上一帧（确保多视频不会叠加占资源）
+                stage.innerHTML = "";
+
+                if (it.type === "video") {
+                    const v = document.createElement("video");
+                    v.className = "card-cover-media";
+                    v.src = it.src;
+                    v.muted = true;
+                    v.autoplay = true;
+                    v.loop = false;
+                    v.playsInline = true;
+                    v.preload = "metadata";
+
+                    // 播完切下一个
+                    v.addEventListener("ended", () => {
+                        k = (k + 1) % items.length;
+                        show(k);
+                    });
+
+                    // 如果自动播放失败，兜底：等 1.8s 切下一条（不让它卡死）
+                    const playPromise = v.play();
+                    if (playPromise && playPromise.catch) {
+                        playPromise.catch(() => {
+                            setTimeout(() => {
+                                k = (k + 1) % items.length;
+                                show(k);
+                            }, 1800);
+                        });
+                    }
+
+                    stage.appendChild(v);
+                } else {
+                    const img = document.createElement("img");
+                    img.className = "card-cover-media";
+                    img.src = it.src;
+                    img.alt = "";
+                    stage.appendChild(img);
+
+                    // 图片停留 2.2s
+                    const id = setTimeout(() => {
+                        k = (k + 1) % items.length;
+                        show(k);
+                    }, 2200);
+                    _coverIntervals.push(id);
+                }
+            };
+
+            // 起播
+            show(k);
+        });
+    }
+
+
+    /* --- RENDER FUNCTIONS --- */
+    function renderHero() {
+        els.heroStatus.textContent = currentData.hero.status;
+
+        if (currentLang === 'cn') {
+            els.heroFirstname.textContent = "余承寰";
+            els.heroFirstname.classList.remove('hero-name-stroke');
+            els.heroFirstname.classList.add('hero-name-cn');
+            els.heroLastname.style.display = 'none';
+        } else {
+            const name = (currentData.hero.name || "").trim();
+            const parts = name.split(/\s+/);
+            els.heroFirstname.textContent = parts[0] || "";
+            els.heroFirstname.classList.remove('hero-name-cn');
+            els.heroFirstname.classList.add('hero-name-stroke');
+            els.heroLastname.textContent = parts.slice(1).join(" ") || "";
+            els.heroLastname.style.display = 'block';
+        }
+
+        els.heroRole.textContent = currentData.hero.role;
+        els.heroBio.textContent = currentData.hero.bio;
+        els.heroLocation.textContent = currentData.hero.location;
+    }
+
+    function renderTitles() {
+        els.titles.projects.textContent = currentData.sectionTitles.projects;
+        els.titles.experience.textContent = currentData.sectionTitles.experience;
+        els.titles.patents.textContent = currentData.sectionTitles.patents;
+        els.titles.education.textContent = currentData.sectionTitles.education;
+        els.titles.skills.textContent = currentData.sectionTitles.skills;
+    }
+
+    function renderProjects() {
+        els.projectsGrid.innerHTML = currentData.projects.map((p, idx) => `
+                <div class="card" onclick="openProjectModal(${idx})">
+                    <div class="hud-corner" style="width:10px; height:10px; border-width:2px; top:0; right:0; border-left:none; border-bottom:none; opacity:0; transition:0.3s;"></div>
+                    <div class="hud-corner" style="width:10px; height:10px; border-width:2px; bottom:0; left:0; border-right:none; border-top:none; opacity:0; transition:0.3s;"></div>
+
+                    <div class="card-img-placeholder">
+                        <div data-cover-index="${idx}" style="position:absolute; inset:0;"></div>
+                        <div class="scan-overlay"></div>
+                    </div>
+                    <div style="padding:1.5rem;">
+                        <h3 class="font-bold text-text" style="font-size:1.25rem; margin-bottom:0.5rem; line-height:1.2;">${p.title}</h3>
+                        <div class="text-subtle font-mono" style="font-size:0.75rem; border-left:2px solid rgba(0, 208, 255, 0.3); padding-left:0.75rem; margin-bottom:1rem;">
+                            ${p.institution}
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${p.techStack.slice(0, 3).map(t => `<span class="tag">${t}</span>`).join('')}
+                            ${p.techStack.length > 3 ? `<span class="tag text-accent" style="border-color:transparent;">+${p.techStack.length - 3}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+        initProjectCovers();
+    }
+
+    function renderExperience() {
+        els.experienceList.innerHTML = currentData.experience.map(exp => `
+                <div class="timeline-item">
+                    <div class="timeline-dot"><div style="width:6px; height:6px; background:var(--color-bg); border-radius:50%;"></div></div>
+                    <div class="timeline-content">
+                        <div class="flex flex-col md-flex-row justify-between md-items-center mb-4 gap-2">
+                            <div>
+                                <h3 style="font-size:1.25rem; font-weight:bold; color:#fff;">${exp.role}</h3>
+                                <div class="text-subtle font-mono" style="font-size:0.875rem; margin-top:0.25rem;">
+                                    <span class="text-accent">@</span> ${exp.company}
+                                </div>
+                            </div>
+                            <div class="font-mono text-subtle text-right">
+                                <div style="font-size:0.875rem; color:var(--color-accent); background:rgba(0, 208, 255, 0.1); padding:2px 8px; border-radius:2px; display:inline-block;">${exp.period}</div>
+                                <div style="font-size:0.75rem; margin-top:0.5rem; letter-spacing:0.1em; text-transform:uppercase;">${exp.location}</div>
+                            </div>
+                        </div>
+                        <ul style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem;">
+                            ${exp.description.map(d => `
+                                <li style="display:flex; gap:1rem; font-size:0.875rem; color:#ccc;">
+                                    <span class="text-accent" style="font-family:monospace;">///</span>
+                                    <span>${d}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="flex flex-wrap gap-2" style="padding-top:1rem; border-top:1px solid rgba(255,255,255,0.05);">
+                            ${exp.techStack.map(t => `<span class="tag">${t}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    function renderPatentsEducation() {
+        // Patents
+        els.patentsList.innerHTML = currentData.patents.map(pat => `
+                <div style="background:linear-gradient(135deg, rgba(33, 38, 45, 0.5), transparent); border:1px solid var(--color-border); padding:2rem; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:rgba(0, 208, 255, 0.05); border-radius:0 0 0 100%; transition:0.5s;"></div>
+                    <h3 style="font-size:1.125rem; font-weight:bold; color:#fff; margin-bottom:0.5rem; font-family:var(--font-mono);">${pat.title}</h3>
+                    <div class="font-mono text-accent" style="font-size:0.75rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; opacity:0.8;">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        ${pat.number} <span style="color:#666;">|</span> ${pat.date}
+                    </div>
+                    <p class="text-subtle" style="font-size:0.875rem;">${pat.description}</p>
+                </div>
+            `).join('');
+
+        // Education
+        els.educationList.innerHTML = currentData.education.map(edu => `
+                <div style="background:rgba(33, 38, 45, 0.3); border:1px solid var(--color-border); padding:2rem; position:relative;">
+                    <div style="position:absolute; top:2rem; left:0; width:4px; height:2rem; background:var(--color-accent); box-shadow:0 0 10px var(--color-accent);"></div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 style="font-size:1.125rem; font-weight:bold; color:#fff;">${edu.school}</h3>
+                        <span class="font-mono text-accent" style="font-size:0.75rem; background:rgba(0, 208, 255, 0.05); padding:2px 6px; border:1px solid rgba(0, 208, 255, 0.2); border-radius:2px;">${edu.period}</span>
+                    </div>
+                    <div class="text-subtle" style="font-size:0.875rem; margin-bottom:1rem;">${edu.degree}</div>
+                    ${edu.gpa ? `<div class="font-mono" style="font-size:0.75rem; color:#888; margin-bottom:1rem;">GPA: <span class="text-accent">${edu.gpa}</span></div>` : ''}
+                    ${edu.achievements ? `
+                        <div style="font-size:0.75rem; color:#888; border-top:1px dashed var(--color-border); padding-top:1rem; line-height:1.6;">
+                            <span class="text-accent" style="margin-right:0.5rem;">FOCUS:</span>
+                            ${edu.achievements.join(" • ")}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+    }
+
+    function renderSkills() {
+        els.skillsGrid.innerHTML = currentData.skills.map(group => `
+                <div style="background:rgba(33, 38, 45, 0.2); border:1px solid rgba(48, 54, 61, 0.5); padding:1.5rem; transition:0.3s;" onmouseover="this.style.background='#21262d'; this.style.borderColor='rgba(0, 208, 255, 0.3)'" onmouseout="this.style.background='rgba(33, 38, 45, 0.2)'; this.style.borderColor='rgba(48, 54, 61, 0.5)'">
+                    <h4 class="font-mono" style="font-size:0.75rem; font-weight:bold; color:#fff; text-transform:uppercase; letter-spacing:0.2em; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid rgba(0, 208, 255, 0.2); display:flex; align-items:center; gap:0.75rem;">
+                        <span style="width:8px; height:8px; background:var(--color-accent); transform:rotate(45deg);"></span>
+                        ${group.category}
+                    </h4>
+                    <ul class="flex flex-col gap-3">
+                        ${group.items.map(item => `
+                            <li class="flex justify-between items-center text-subtle" style="font-size:0.875rem;">
+                                <span>${item}</span>
+                                <span class="text-accent" style="font-size:0.5rem; letter-spacing:0.1em; opacity:0.5;">[LOADED]</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+    }
+
+    /* --- MODAL LOGIC --- */
+    window.openProjectModal = function (index) {
+        const p = currentData.projects[index];
+        els.modal.title.textContent = p.title;
+        els.modal.institution.textContent = p.institution;
+        els.modal.period.textContent = p.period;
+        els.modal.description.textContent = p.description;
+
+        els.modal.stack.innerHTML = p.techStack.map(t => `<span class="tag" style="color:#ccc; border-color:var(--color-border);">${t}</span>`).join('');
+
+        if (p.link) {
+            els.modal.linkContainer.style.display = 'block';
+            els.modal.link.href = p.link;
+        } else {
+            els.modal.linkContainer.style.display = 'none';
+        }
+
+        els.modal.mediaList.innerHTML = (p.media || []).map((m, idx) => `
+                <div style="margin-bottom:2rem;">
+                    <div style="background:var(--color-card); aspect-ratio:16/9; width:100%; border-radius:2px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.1); margin-bottom:0.75rem;">
+                        ${
+            m.type === "video"
+                ? `<video class="modal-video" src="${m.src}" controls autoplay muted loop playsinline
+        style="width:100%;height:100%;object-fit:cover;"></video>`
+                : `<img src="${m.src}" alt="" style="width:100%;height:100%;object-fit:cover;">`
+        }
+                        <div class="scan-overlay" style="opacity:0.25;"></div>
+                    </div>
+                    <div style="padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.3); font-family:var(--font-mono); font-size:0.75rem;">
+                        <span class="text-accent">FIGURE_${idx + 1}.0</span> <span style="color:#666;">//</span> <span style="text-transform:uppercase; color:#888;">${m.caption || ""}</span>
+                    </div>
+                </div>
+            `).join('') || `<div class="text-subtle font-mono">NO MEDIA FOUND IN: ${PROJECT_MEDIA_BASE}/${p.assetDir || "?"}</div>`;
+
+        els.modal.overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+            const v = els.modal.container.querySelector("video.modal-video");
+            if (v) {
+                v.muted = true;
+                const p = v.play();
+                if (p && typeof p.catch === "function") p.catch(() => {
+                });
+            }
+        }, 50);
+    };
+
+    function closeModal() {
+        els.modal.overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        els.modal.container.querySelectorAll("video").forEach(v => {
+            try {
+                v.pause();
+                v.currentTime = 0;
+            } catch {
+            }
+        });
+
+    }
+
+    els.modal.closeBtn.onclick = closeModal;
+    els.modal.overlay.onclick = (e) => {
+        if (e.target === els.modal.overlay) closeModal();
+    };
+
+    /* --- LANG SWITCH --- */
+    els.langToggle.onclick = () => {
+        currentLang = currentLang === 'en' ? 'cn' : 'en';
+        currentData = currentLang === 'en' ? DATA_EN : DATA_CN;
+        els.langText.textContent = currentLang === 'en' ? 'EN' : '中文';
+        renderAll();
+    };
+
+    function renderAll() {
+        renderHero();
+        renderTitles();
+        renderProjects();
+        renderExperience();
+        renderPatentsEducation();
+        renderSkills();
+    }
+
+    /* --- PARTICLES CANVAS --- */
+    function initParticles() {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    size: Math.random() * 2 + 0.5,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        let time = 0;
+
+        function animate() {
+            time += 0.01;
+            ctx.clearRect(0, 0, width, height);
+
+            particles.forEach((p, i) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                ctx.beginPath();
+                let opacity = p.alpha + Math.sin(time + i) * 0.2;
+                ctx.fillStyle = `rgba(0, 208, 255, ${Math.max(0, Math.min(1, opacity))})`;
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dx = p.x - p2.x;
+                    let dy = p.y - p2.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        let grad = ctx.createLinearGradient(p.x, p.y, p2.x, p2.y);
+                        grad.addColorStop(0, `rgba(0, 208, 255, 0)`);
+                        grad.addColorStop(0.5, `rgba(0, 208, 255, ${0.15 * (1 - dist / 120)})`);
+                        grad.addColorStop(1, `rgba(0, 208, 255, 0)`);
+                        ctx.strokeStyle = grad;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            createParticles();
+        });
+        resize();
+        createParticles();
+        animate();
+    }
+
+    window.onload = async () => {
+        await applyDiscoveredMediaToData(DATA_EN);
+        await applyDiscoveredMediaToData(DATA_CN);
+        renderAll();
+        initParticles();
+    };
+
+</script>
 </body>
 </html>
